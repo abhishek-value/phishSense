@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+ 
+  "name": "PhishSense AI",
+  "version": "1.0.0",
+  "description": "Detects email phishing using psychological manipulation analysis, BEC detection, and technical threat indicators.",
+  "author": {
+    "email": "abhishek.upadhyay@valuelabs.com"
+  },
+ 
+  "permissions": [
+    "activeTab",
+    "storage",
+    "sidePanel",
+    "notifications"
+  ],
+ 
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://outlook.live.com/*",
+    "https://outlook.office.com/*",
+    "https://outlook.office365.com/*"
+  ],
+ 
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": {
+      "16": "public/icons.svg",
+      "48": "public/icons.svg",
+      "128": "public/icons.svg"
+    },
+    "default_title": "PhishSense AI — Scan Email"
+  },
+ 
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+ 
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+ 
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://outlook.cloud.microsoft/*"
+      ],
+      "js": ["src/ content/index.tsx"],
+      "css": ["src/ content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+ 
+  "icons": {
+    "16": "public/icons.svg",
+    "48": "public/icons.svg",
+    "128": "public/icons.svg"
+  }
+}
