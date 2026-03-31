@@ -50,8 +50,8 @@
         "https://outlook.office365.com/*",
         "https://outlook.cloud.microsoft/*"
       ],
-      "js": ["src/ content/index.tsx"],
-      "css": ["src/ content/content.css"],
+      "js": ["src/content/index.tsx"],
+      "css": ["src/content/content.css"],
       "run_at": "document_idle"
     }
   ],
