@@ -14,38 +14,19 @@ Define Manifest V3 config. Add host permissions for Gmail and all Outlook domain
 
 **Status:** Done — `manifest.json` configured with Manifest V3, all required host permissions, content script registration for Gmail + Outlook, and background service worker.
 
+### T-03 — Platform Adapter Factory ✅
+Create a factory function that detects the active email platform from `window.location.hostname` and returns the correct adapter (Gmail or Outlook). Both adapters must expose the same interface: `isEmailOpen()`, `readEmail()`, `getBadgeTarget()`, `getBodyElement()`. Dev 2 will implement Outlook adapter against this interface.
+
+**Status:** Done — Adapter interface, stubs, and factory are complete.
+
+### T-04 — Gmail DOM Adapter ✅
+Read subject, body text, sender email and all HTTP links from the Gmail reading pane DOM. Return as `{ subject, body, sender, links[] }`. Use stable DOM selectors.
+
+**Status:** Done — `GmailAdapter` implemented with DOM selectors for reading email content.
+
 ---
 
 ## Pending Tasks
-
-### T-03 — Platform Adapter Factory 🔲
-Create a factory function that detects the active email platform from `window.location.hostname` and returns the correct adapter (Gmail or Outlook). Both adapters must expose the same interface: `isEmailOpen()`, `readEmail()`, `getBadgeTarget()`, `getBodyElement()`. Dev 2 will implement Outlook adapter against this interface.
-
-**Status:** Not started — no adapter code exists yet.
-
-**Steps to complete:**
-1. Create `src/content/adapters/types.ts` — define the `EmailPlatformAdapter` interface with `isEmailOpen()`, `readEmail()`, `getBadgeTarget()`, `getBodyElement()`.
-2. Create `src/content/adapters/GmailAdapter.ts` — stub implementation of the adapter for Gmail (actual DOM logic comes in T-04).
-3. Create `src/content/adapters/OutlookAdapter.ts` — stub implementation for Outlook (Dev 2 will fill in).
-4. Create `src/content/adapters/adapterFactory.ts` — factory function that reads `window.location.hostname` and returns the correct adapter instance.
-5. Export all adapters and factory from `src/content/adapters/index.ts`.
-
----
-
-### T-04 — Gmail DOM Adapter 🔲
-Read subject, body text, sender email and all HTTP links from the Gmail reading pane DOM. Return as `{ subject, body, sender, links[] }`. Use stable DOM selectors.
-
-**Status:** Not started — content script is currently just a `console.log`.
-
-**Steps to complete:**
-1. Identify stable Gmail DOM selectors for the reading pane (subject: `h2[data-thread-perm-id]`, sender: `span[email]`, body: `div.a3s`, links: anchor tags within body).
-2. Implement `isEmailOpen()` — check if the reading pane is visible.
-3. Implement `readEmail()` — extract subject, body, sender, and links; return as `{ subject, body, sender, links[] }`.
-4. Implement `getBadgeTarget()` — return the DOM element where the risk badge should be injected.
-5. Implement `getBodyElement()` — return the email body container element.
-6. Test against live Gmail DOM to validate selectors.
-
----
 
 ### T-07 — Content Script Orchestrator 🔲
 Main content.js logic: initialise platform adapter, watch for new emails, call `readEmail()`, deduplicate, send payload to background worker, handle response, trigger badge and side panel updates. Dev 2 badge and Dev 3 side panel integrate via `postMessage` — no hard dependency.

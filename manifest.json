@@ -19,7 +19,8 @@
     "https://mail.google.com/*",
     "https://outlook.live.com/*",
     "https://outlook.office.com/*",
-    "https://outlook.office365.com/*"
+    "https://outlook.office365.com/*",
+    "https://outlook.cloud.microsoft/*"
   ],
  
   "action": {
@@ -50,7 +51,7 @@
         "https://outlook.office365.com/*",
         "https://outlook.cloud.microsoft/*"
       ],
-      "js": ["src/content/index.tsx"],
+      "js": ["src/content/index.ts"],
       "css": ["src/content/content.css"],
       "run_at": "document_idle"
     }

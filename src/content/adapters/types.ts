@@ -1,9 +1,4 @@
-export interface EmailData {
-  subject: string;
-  body: string;
-  sender: string;
-  links: string[];
-}
+import type { EmailData } from '../../shared/types';
 
 export interface EmailPlatformAdapter {
   isEmailOpen(): boolean;

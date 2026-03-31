@@ -11,7 +11,7 @@ chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 // Message listener - central hub for all communication
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Received message in background:", message, sender);
-
+  sendResponse({ status: 'not_implemented' });
   return true; // Indicates we will respond asynchronously
 });
 
