@@ -8,9 +8,11 @@ import manifest from './manifest.json'
 export default defineConfig({
   plugins: [react(), tailwindcss(), crx({ manifest })],
   server: {
+    host: '127.0.0.1',
     port: 5173,
     strictPort: true,
     hmr: {
+      host: '127.0.0.1',
       port: 5173,
     },
     cors: {

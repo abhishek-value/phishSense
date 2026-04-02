@@ -56,7 +56,7 @@
       "run_at": "document_idle"
     }
   ],
- 
+
   "icons": {
     "16": "public/icons.svg",
     "48": "public/icons.svg",
