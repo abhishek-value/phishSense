@@ -42,12 +42,37 @@ chrome.runtime.onMessage.addListener(
             [STORAGE_KEY.LATEST_RESULT]: mockAnalysis,
           });
 
-          // Open the side panel and then send the response
+          // Notify content script to update the badge
           const targetTabId = message.tabId || sender.tab?.id;
           if (targetTabId) {
-            await chrome.sidePanel.open({ tabId: targetTabId });
+            chrome.tabs.sendMessage(targetTabId, {
+              type: 'SCAN_COMPLETE',
+              result: mockAnalysis,
+            }).catch(() => {
+              // Content script may not be available (e.g. tab navigated away)
+            });
           }
+
           sendResponse({ status: 'complete' });
+          break;
+        }
+
+        case 'NEW_EMAIL_DETECTED': {
+          // Only act if the side panel is currently open
+          const isSidePanelOpen = chrome.extension.getViews().some(
+            (view) => view.location.href.includes('sidepanel')
+          );
+          if (isSidePanelOpen) {
+            // Reset the side panel to idle state
+            chrome.runtime.sendMessage({ type: 'RESET' }).catch(() => {});
+
+            // Open the popup so the user can scan the new email
+            chrome.action.openPopup().catch((err) => {
+              console.warn('PhishSense: Could not open popup:', err);
+            });
+          }
+
+          sendResponse({ status: 'ok' });
           break;
         }
 

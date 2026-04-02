@@ -46,6 +46,11 @@ export class OutlookAdapter implements EmailPlatformAdapter {
     return document.querySelector('div[aria-label="Message body"]') as HTMLElement | null;
   }
 
+  getWatchTarget(): HTMLElement | null {
+    // Outlook's reading pane area that changes when a new email is selected
+    return document.querySelector('[role="main"]') as HTMLElement | null;
+  }
+
   private parseSender(raw: string): { name: string; email: string } {
     // Format: "Samba Damerla (JIRA)<jira@snapfish-llc.atlassian.net>"
     // or: "Arpit Ajmera (V)<notifications@github.com>"

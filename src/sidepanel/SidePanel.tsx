@@ -38,8 +38,18 @@ const SidePanel = () => {
 
     chrome.storage.onChanged.addListener(handleStorageChange);
 
+    // Reset to idle when a new email is detected in the tab
+    const handleMessage = (message: { type: string }) => {
+      if (message.type === 'RESET') {
+        setData(null);
+        setError(null);
+      }
+    };
+    chrome.runtime.onMessage.addListener(handleMessage);
+
     return () => {
       chrome.storage.onChanged.removeListener(handleStorageChange);
+      chrome.runtime.onMessage.removeListener(handleMessage);
     };
   }, []);
 
@@ -54,9 +64,12 @@ const SidePanel = () => {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white p-4">
-        <h1 className="text-lg font-bold">🛡️ PhishSense AI</h1>
-        <p className="text-sm text-slate-400 mt-1">Loading analysis...</p>
+      <div className="min-h-screen bg-slate-950 text-white p-4 flex flex-col items-center justify-center gap-3">
+        <span className="text-4xl">🛡️</span>
+        <h1 className="text-lg font-bold">PhishSense AI</h1>
+        <p className="text-sm text-slate-400 text-center">
+          New email detected. Open the popup to scan it.
+        </p>
       </div>
     );
   }

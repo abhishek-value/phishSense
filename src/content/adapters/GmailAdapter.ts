@@ -43,4 +43,9 @@ export class GmailAdapter implements EmailPlatformAdapter {
     const messageEl = document.querySelector('[data-message-id]');
     return messageEl ? (messageEl.querySelector('div.a3s') as HTMLElement) : null;
   }
+
+  getWatchTarget(): HTMLElement | null {
+    // Gmail's main content area that changes when navigating between emails
+    return document.querySelector('div[role="main"]') as HTMLElement | null;
+  }
 }

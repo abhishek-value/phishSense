@@ -24,9 +24,50 @@ Read subject, body text, sender email and all HTTP links from the Gmail reading 
 
 **Status:** Done — `GmailAdapter` implemented with DOM selectors for reading email content.
 
+### T-05 — Outlook DOM Adapter ✅
+Same interface as Gmail adapter (`isEmailOpen`, `readEmail`, `getBadgeTarget`, `getBodyElement`) but reads Outlook Web DOM. Uses `#ConversationReadingPaneContainer`, `span.JdFsz` (subject), `span.OZZZK` (sender), and `div[aria-label="Message body"]` selectors. Includes `parseSender()` for "Name \<email\>" format.
+
+**Status:** Done — `src/content/adapters/OutlookAdapter.ts` fully implements the `EmailPlatformAdapter` interface.
+
+> ~~**Note:** T-03 interface is missing `getWatchTarget(): HTMLElement | null` which T-06 will need.~~ — **Resolved:** `getWatchTarget()` added to interface, GmailAdapter, and OutlookAdapter as part of T-06.
+
 ---
 
 ## Pending Tasks
+
+### T-05.1 — Outlook Adapter Selector Hardening 🔲
+Current Outlook selectors (`span.JdFsz`, `span.OZZZK`) are generated class names that may change across Outlook updates. Migrate to stable selectors using `data-testid`, `aria-label`, and `role` attributes as specified in the original task requirements.
+
+**Status:** Not started — Current selectors work but are fragile.
+
+**Assigned to:** Arpit Ajmera
+
+---
+
+### T-06 — MutationObserver Watcher ✅
+Detect when a new email is loaded in Outlook (SPA — no page reload on email click). Fire a callback to re-trigger analysis. Guard against re-firing for the same email. Self-contained — plug into `content.js` at integration.
+
+**Status:** Done — `src/content/watcher.ts` implements `EmailWatcher` class with:
+- `MutationObserver` on `adapter.getWatchTarget()` (Gmail: `div[role="main"]`, Outlook: `[role="main"]`)
+- 300ms debounce to batch rapid DOM mutations
+- Deduplication via key of `sender|subject|body-prefix` — skips re-fire for same email
+- `start()` / `stop()` methods; auto-retries if watch target not yet in DOM
+- Integrated into `src/content/index.ts` — auto-scans on email change
+
+---
+
+### T-09 — Badge Injector ✅
+Inject a coloured pill badge into Gmail or Outlook email header toolbar. States: Loading (grey) / Safe (green) / Suspicious (amber) / Phishing (red). Shows score. Clicking badge fires `window.postMessage('TOGGLE_SIDEPANEL')`. Removable and re-injectable per email.
+
+**Status:** Done — `src/content/badge.ts` implements `BadgeInjector` class with:
+- `inject(target, state)` — creates pill badge and inserts after the target element
+- `update(state)` — updates colour and score text in-place
+- `remove()` — removes badge from DOM
+- Four states: Loading (grey `#374151`), Safe (green `#14532d`), Suspicious (amber `#422006`), Phishing (red `#450a0a`)
+- Click handler dispatches `window.postMessage({ type: 'TOGGLE_SIDEPANEL' })`
+- `BadgeState` type added to `src/shared/types.ts`
+- Styles are inline (no CSS class collisions) — `content.css` reserved for future use
+- Content script listens for `TOGGLE_SIDEPANEL` postMessage and forwards to background as `OPEN_SIDE_PANEL`
 
 ### T-07 — Content Script Orchestrator 🔲
 Main content.js logic: initialise platform adapter, watch for new emails, call `readEmail()`, deduplicate, send payload to background worker, handle response, trigger badge and side panel updates. Dev 2 badge and Dev 3 side panel integrate via `postMessage` — no hard dependency.

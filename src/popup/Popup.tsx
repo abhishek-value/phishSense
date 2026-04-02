@@ -18,15 +18,26 @@ const Popup = () => {
         return;
       }
 
-      // Step 1: Tell the content script to read the email
-      const readResponse = await chrome.tabs.sendMessage(tab.id, { type: 'READ_EMAIL' });
+      // Step 1: Open the side panel now — must happen within a user gesture context (popup click).
+      await chrome.sidePanel.open({ tabId: tab.id });
+
+      // Step 2: Tell the content script to read the email.
+      let readResponse;
+      try {
+        readResponse = await chrome.tabs.sendMessage(tab.id, { type: 'READ_EMAIL' });
+      } catch {
+        setScanState('error');
+        setErrorMessage('Content script not ready. Please reload the Gmail or Outlook page and try again.');
+        return;
+      }
+
       if (!readResponse?.emailData) {
         setScanState('no-email');
         setErrorMessage('No email is currently open.');
         return;
       }
 
-      // Step 2: Send the email data to the background for analysis and close the popup.
+      // Step 3: Send the email data to the background for analysis and close the popup.
       chrome.runtime.sendMessage({
         type: 'SCAN_EMAIL',
         emailData: readResponse.emailData,

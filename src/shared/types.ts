@@ -34,3 +34,12 @@ export type ExtensionMessage  =
 | { type: 'OPEN_SIDE_PANEL' }
 | { type: 'READ_EMAIL' }
 | { type: 'EMAIL_DATA'; emailData: EmailData | null }
+| { type: 'TOGGLE_SIDEPANEL' }
+| { type: 'SCAN_COMPLETE'; result: PhishAnalysisResult }
+| { type: 'NEW_EMAIL_DETECTED' }
+| { type: 'RESET' }
+
+// Badge states for the injected pill badge
+export type BadgeState =
+  | { status: 'loading' }
+  | { status: 'safe' | 'suspicious' | 'phishing'; score: number };

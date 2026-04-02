@@ -5,4 +5,5 @@ export interface EmailPlatformAdapter {
   readEmail(): EmailData | null;
   getBadgeTarget(): HTMLElement | null;
   getBodyElement(): HTMLElement | null;
+  getWatchTarget(): HTMLElement | null;
 }
