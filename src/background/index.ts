@@ -1,5 +1,5 @@
 import type { ExtensionMessage, PhishAnalysisResult } from '../shared/types';
-import { API_BASE_URL, STORAGE_KEY } from '../shared/constants';
+import { STORAGE_KEY } from '../shared/constants';
 
 // Service Worker - NO DOM, NO Window, NO document here
 
@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(
   (message: ExtensionMessage, sender, sendResponse) => {
     console.log('Received message in background:', message, sender);
 
-    const handleMessage = async () => {
+    (async () => {
       switch (message.type) {
         case 'SCAN_EMAIL': {
           // MOCK API RESPONSE - REMOVE LATER
@@ -42,7 +42,12 @@ chrome.runtime.onMessage.addListener(
             [STORAGE_KEY.LATEST_RESULT]: mockAnalysis,
           });
 
-          sendResponse(mockAnalysis);
+          // Open the side panel and then send the response
+          const targetTabId = message.tabId || sender.tab?.id;
+          if (targetTabId) {
+            await chrome.sidePanel.open({ tabId: targetTabId });
+          }
+          sendResponse({ status: 'complete' });
           break;
         }
 
@@ -52,19 +57,10 @@ chrome.runtime.onMessage.addListener(
           break;
         }
 
-        case 'OPEN_SIDE_PANEL': {
-          if (sender.tab?.id) {
-            await chrome.sidePanel.open({ tabId: sender.tab.id });
-          }
-          break;
-        }
-
         default:
           sendResponse({ status: 'not_implemented' });
       }
-    };
-
-    handleMessage();
+    })();
     return true; // Indicates we will respond asynchronously
   }
 );

@@ -28,7 +28,7 @@ export interface ManipulationTactic {
 
 // Message format for communication between content script and background/sidepanel
 export type ExtensionMessage  =
-| { type: 'SCAN_EMAIL'; emailData: EmailData }
+| { type: 'SCAN_EMAIL'; emailData: EmailData; tabId?: number }
 | { type: 'ANALYSIS_RESULT'; analysis: PhishAnalysisResult }
 | { type: 'GET_LATEST_RESULT'; }
 | { type: 'OPEN_SIDE_PANEL' }
